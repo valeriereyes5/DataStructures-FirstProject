@@ -1,6 +1,7 @@
 package edu.uprm.ece.icom4035.list;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 
 public class ArrayList<E> implements List<E>{
 	private static final int INITCAP = 1;
@@ -16,14 +17,13 @@ public class ArrayList<E> implements List<E>{
 	}
 	@Override
 	public Iterator iterator() {
-		return null;
 		// TODO Auto-generated method stub
-		/*Iterator<E> iter = new List<>();
+		Iterator<E> iter = new ArrayListIterator<E>();
 		while(iter.hasNext()) {
 			iter.next();
 		}
 		return iter;
-		\*/
+		
 	}
 
 
@@ -104,12 +104,12 @@ public class ArrayList<E> implements List<E>{
 	public int removeAll(Object obj) {
 		// TODO Auto-generated method stub
 		int counter =0;
-		for(int i=0; i<size; i++) {
-			if(element[i].equals(obj)){
-			element[i]=null;
-			size--;
+		for(int i=0; i<this.size; i++) {
+			if(obj.equals(element[i])){
+			this.remove(i);
 			counter++;
 			}
+			this.size = this.size -counter;
 		}
 		return counter;
 	}
@@ -237,6 +237,42 @@ public class ArrayList<E> implements List<E>{
 		for(int pos = low; pos>=sup; pos++) {
 			element[pos-1]=element[pos];
 
+		}
+	}
+	
+	public class ArrayListIterator<E> implements Iterator<E>{
+		private int current;
+		private boolean canRemove;
+		private ArrayList<E> list;
+		
+		public ArrayListIterator() {
+			current=0;
+			canRemove =false;
+		}
+		@Override
+		public boolean hasNext() {
+			// TODO Auto-generated method stub
+		 return current<list.size();
+		}
+
+		@Override
+		public E next() {
+			// TODO Auto-generated method stub
+			if(!hasNext()) {
+				throw new NoSuchElementException();
+			}
+			else {
+				canRemove = true;
+				return list.get(current++);
+			}
+		}
+		public void remove(){
+			if(!canRemove) {
+				throw new IllegalStateException();
+			}
+			list.remove(current);
+			canRemove=false;
+			
 		}
 	}
 }

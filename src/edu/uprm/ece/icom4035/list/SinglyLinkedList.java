@@ -2,6 +2,9 @@ package edu.uprm.ece.icom4035.list;
 
 import java.util.Iterator;
 
+
+
+
 public class SinglyLinkedList<E> implements List<E> {
 
 	@Override
@@ -13,7 +16,7 @@ public class SinglyLinkedList<E> implements List<E> {
 	@Override
 	public void add(Object obj) {
 		// TODO Auto-generated method stub
-		
+
 	}
 	//make method that finds the node that is the references
 
@@ -24,7 +27,7 @@ public class SinglyLinkedList<E> implements List<E> {
 	}
 
 	@Override
-	public boolean remove(Object obj) {
+	public boolean remove(E e) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -100,5 +103,6 @@ public class SinglyLinkedList<E> implements List<E> {
 		// TODO Auto-generated method stub
 		
 	}
+
 
 }
