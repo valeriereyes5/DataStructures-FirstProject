@@ -21,7 +21,6 @@ public class Test1 {
 		 P2 = new PolynomialImp("4x^2+2");
 
 	}
-
 	@Test
 	public void testAdd() {
 		Polynomial P3 = P1.add(P2);
@@ -51,7 +50,6 @@ public class Test1 {
 	public void testDerivative() {
 		Polynomial P3 = P1.derivative();
 		Polynomial P4 = new PolynomialImp("16x");
-		System.out.printf("Derivative-> P3: %s, P4: %s\n", P3, P4);
 		assertTrue(P3.equals(P4));
 
 	}

@@ -17,7 +17,7 @@ public class PolynomialImp extends TermListFactory implements Polynomial {
 	public PolynomialImp(String string) {
 		// TODO Auto-generated constructor stub
 		this.list = factory.newInstance();
-		this.parseTerms(string);
+		this.toTerm(string);
 	}
 
 	public PolynomialImp() {
@@ -25,33 +25,66 @@ public class PolynomialImp extends TermListFactory implements Polynomial {
 		this.list = factory.newInstance();
 	}
 
-	private void parseTerms(String string) {
-		// TODO Auto-generated method stub
-		String [] ply = string.split("\\+");
-		double Coef = 0;
-		int Exp = 0;
-		for(int i =0; i<ply.length; i++) {
-			if(ply[i].contains("x") && ply[i].contains("^")) {
 
-				Coef = Character.getNumericValue(ply[i].charAt(ply[i].length() - 4));
-				Exp = Character.getNumericValue(ply[i].charAt(ply[i].length()-1));
+	public PolynomialImp(PolynomialImp poly) {
+		// TODO Auto-generated constructor stub
+		this.list=poly.list;
+	}
+	public void toTerm(String poly){
+		List<String> stringsDivided = divideByTerm(poly);
+		double coef = 0;
+		int exp = 0;
+		String[] termStorage;
 
+		for(int i = 0; i < stringsDivided.size(); i++){
+			if(!stringsDivided.get(i).contains("+")) {
+				if(stringsDivided.get(i).contains("x^")){
+					termStorage = stringsDivided.get(i).split("x\\^");
+					for(int j = 0; j < termStorage.length; j++){
+						if(j==0){
+							if((termStorage[j].equals("+")))
+								coef = 1;
+							else if(termStorage[j].equals("-"))
+								coef = -1;
+							else{
+								coef = Double.parseDouble(termStorage[j]);	
+							}
+						}
+						else{
+							exp = (int)Double.parseDouble(termStorage[j]);					
+						}			
+					}				
+				}
+				else if(stringsDivided.get(i).contains("x")){
+					termStorage = stringsDivided.get(i).split("x");
+					exp = 1;
+					if((termStorage[0].equals("+")))
+						coef = 1;
+					else if(termStorage[0].equals("-"))
+						coef = -1;
+					else
+						coef = Double.parseDouble(termStorage[0]);
+				}
+				else{ 
+					exp = 0;
+					coef = Double.parseDouble(stringsDivided.get(i));
+				}
+				this.list.add(new TermImp(coef,exp));
 			}
-			if(ply[i].contains("x") && !ply[i].contains("^")) {
-				Coef = 1.00;
-				Exp=1;
-			}
-
-			if(!ply[i].contains("x") && !ply[i].contains("^")) {
-
-				Coef = Double.parseDouble(ply[i]);;
-
-				Exp = 0;
-
-			}
-
-			this.list.add(new TermImp(Coef,Exp));
 		}
+
+	}
+
+	public List<String> divideByTerm(String poly){
+		List<String> strings = (List<String>) new ArrayList<String>();
+
+		String[] str = poly.split("(?=[\\+-])");
+
+		for(int i= 0 ; i < str.length ;i++){
+			strings.add(str[i]);
+		}
+
+		return strings;
 	}
 
 	@Override
@@ -70,15 +103,18 @@ public class PolynomialImp extends TermListFactory implements Polynomial {
 		Iterator<Term> p2 = P2.iterator();
 		Iterator<Term> p1 = this.iterator();
 
-		Term p1term =p1.next();
-		Term p2term = p2.next();
+		Term p1term, p2term;
 
 		while(p1.hasNext() || p2.hasNext()) {
+			p1term = p1.next();
+			p2term = p2.next();
+
 			if(!p1.hasNext()&& p2.hasNext()) {
 				while(p2.hasNext()) {
 					poly.list.add(new TermImp(p2term.getCoefficient(), p2term.getExponent()));
+					break;
 				}
-				break;
+
 			}
 			else if(p1.hasNext()&& !p2.hasNext()){
 				while(p1.hasNext()) {
@@ -89,19 +125,16 @@ public class PolynomialImp extends TermListFactory implements Polynomial {
 
 			while(p1term.getExponent() > p2term.getExponent()) {
 				poly.list.add(new TermImp(p1term.getCoefficient(), p1term.getExponent()));
-				p1term=p1.next();
+				break;
 			}
 			while(p1term.getExponent()==p2term.getExponent()) {
 				poly.list.add(new TermImp(p1term.getCoefficient() + p2term.getCoefficient(), p1term.getExponent() ));
-
-				p1term=p1.next();
-				p2term=p2.next();
-
+				break;
 
 			}
 			while(p1term.getExponent() < p2term.getExponent()){
 				poly.list.add(new TermImp(p2term.getCoefficient(), p2term.getExponent()));
-				p2term=p2.next();
+				break;
 			}
 
 
@@ -116,11 +149,12 @@ public class PolynomialImp extends TermListFactory implements Polynomial {
 		PolynomialImp poly = new PolynomialImp();
 		Iterator<Term> p2 = P2.iterator();
 		Iterator<Term> p1 = this.iterator();
-
-		Term p1term =p1.next();
-		Term p2term = p2.next();
+		Term p1term, p2term;
 
 		while(p1.hasNext() || p2.hasNext()) {
+			p1term = p1.next();
+			p2term = p2.next();
+
 			if(!p1.hasNext()&& p2.hasNext()) {
 				while(p2.hasNext()) {
 					poly.list.add(new TermImp(p2term.getCoefficient(), p2term.getExponent()));
@@ -136,19 +170,16 @@ public class PolynomialImp extends TermListFactory implements Polynomial {
 
 			while(p1term.getExponent() > p2term.getExponent()) {
 				poly.list.add(new TermImp(p1term.getCoefficient(), p1term.getExponent()));
-				p1term=p1.next();
+				break;
 			}
 			while(p1term.getExponent()==p2term.getExponent()) {
 				poly.list.add(new TermImp(p1term.getCoefficient() - p2term.getCoefficient(), p1term.getExponent() ));
-
-				p1term=p1.next();
-				p2term=p2.next();
-
+				break;
 
 			}
 			while(p1term.getExponent() < p2term.getExponent()){
-				poly.list.add(new TermImp(p2term.getCoefficient(), p2term.getExponent()));
-				p2term=p2.next();
+				poly.list.add(new TermImp(-p2term.getCoefficient(), p2term.getExponent()));
+				break;
 			}
 
 
@@ -158,7 +189,17 @@ public class PolynomialImp extends TermListFactory implements Polynomial {
 	@Override
 	public Polynomial multiply(Polynomial P2) {
 		// TODO Auto-generated method stub
-		return null;
+		PolynomialImp poly = new PolynomialImp();
+		Iterator<Term> p1 = this.iterator();
+		Iterator<Term> p2 = P2.iterator();
+
+		Term p1term, p2term;
+		while(p1.hasNext() || p2.hasNext()) {
+			p1term = p1.next();
+			p2term = p2.next();
+			poly.list.add(new TermImp(p1term.getCoefficient() * p1term.getCoefficient(), p1term.getExponent() + p2term.getExponent()));
+		}
+		return poly;
 	}
 
 	@Override
@@ -177,19 +218,43 @@ public class PolynomialImp extends TermListFactory implements Polynomial {
 	@Override
 	public Polynomial derivative() {
 		// TODO Auto-generated method stub
-		return null;
+		PolynomialImp poly = new PolynomialImp();
+		//List<Term> poly = TermListFactory.newListFactory().newInstance();
+		Iterator<Term> iter = this.iterator();
+		Term myterm;
+
+		while(iter.hasNext()) {
+			myterm = (Term)iter.next();
+			poly.list.add(new TermImp(myterm.getCoefficient()*(myterm.getExponent()), myterm.getExponent()-1));
+		}
+		poly.list.add(new TermImp(1.0,0));
+		//String newpoly=poly.toString();
+		return new PolynomialImp(poly);
 	}
 
 	@Override
 	public Polynomial indefiniteIntegral() {
 		// TODO Auto-generated method stub
-		return null;
+		PolynomialImp poly = new PolynomialImp();
+		//List<Term> poly = TermListFactory.newListFactory().newInstance();
+		Iterator<Term> iter = this.iterator();
+		Term myterm;
+
+		while(iter.hasNext()) {
+			myterm = (Term)iter.next();
+			poly.list.add(new TermImp(myterm.getCoefficient()/( myterm.getExponent()+1), myterm.getExponent()+1));
+		}
+		poly.list.add(new TermImp(1.0,0));
+		String newpoly=poly.toString();
+		return new PolynomialImp(newpoly);
 	}
 
 	@Override
 	public double definiteIntegral(double a, double b) {
 		// TODO Auto-generated method stub
-		return 0;
+		Polynomial poly = new PolynomialImp();
+		poly=this.indefiniteIntegral();
+		return (poly.evaluate(b))-(poly.evaluate(a));
 	}
 
 	@Override
@@ -221,10 +286,11 @@ public class PolynomialImp extends TermListFactory implements Polynomial {
 		Iterator<Term> p2 = P.iterator();
 		Iterator<Term> p1 = this.iterator();
 
-		Term p1term =p1.next();
-		Term p2term = p2.next();
 
 		while(p1.hasNext() && p2.hasNext()) {
+			Term p1term =p1.next();
+			Term p2term = p2.next();
+
 			if((p1term.getCoefficient()==p2term.getCoefficient()) && (p1term.getExponent() == p2term.getExponent())) {
 				similar=true;
 			}
@@ -234,14 +300,14 @@ public class PolynomialImp extends TermListFactory implements Polynomial {
 	public String toString() {
 		String result = new String();
 		for(int i =0; i<this.list.size(); i++) {
-			if(this.list.get(i).getCoefficient() > 1) {
-				result+= Double.toString(this.list.get(i).getCoefficient())+"x"+"^"+Integer.toString(this.list.get(i).getExponent());
+			if(this.list.get(i).getExponent() > 1) {
+				result+=String.format("%.2f", this.list.get(i).getCoefficient()) +"x"+"^"+Integer.toString(this.list.get(i).getExponent() );
 			}
-			else if(this.list.get(i).getCoefficient()==1) {
-				result += Double.toString(this.list.get(i).getCoefficient())+"x";
+			else if(this.list.get(i).getExponent()==1) {
+				result +="+" +String.format("%.2f", this.list.get(i).getCoefficient())+"x";
 			}
 			else {
-				result += Double.toString(this.list.get(i).getCoefficient());
+				result +="+"+ String.format("%.2f", this.list.get(i).getCoefficient());
 			}
 		}
 		return result;
@@ -271,9 +337,6 @@ public class PolynomialImp extends TermListFactory implements Polynomial {
 
 	}
 }
-//from evaluate method: case  where a coefficient is negative
-//fir iterartor class
-//review tostring
-//review degree method for test 2
-//parse terms for coeficients like 12 etc
-//poner negativos en el substarct
+//parse with 2 digits and parse that takes in the negative
+//verify the equals method
+//fix tostring
